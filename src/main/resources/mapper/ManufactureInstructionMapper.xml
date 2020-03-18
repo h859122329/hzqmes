@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.ManufactureInstructionDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.ManufactureInstruction">
+        <id column="id" property="id" />
+        <result column="order_product_id" property="orderProductId" />
+        <result column="product_id" property="productId" />
+        <result column="batch_no" property="batchNo" />
+        <result column="order_quantity" property="orderQuantity" />
+        <result column="planned_quantity" property="plannedQuantity" />
+        <result column="actual_yield" property="actualYield" />
+        <result column="balance" property="balance" />
+        <result column="brief" property="brief" />
+        <result column="planned_begin_time" property="plannedBeginTime" />
+        <result column="planned_end_time" property="plannedEndTime" />
+        <result column="actual_begin_time" property="actualBeginTime" />
+        <result column="actual_end_time" property="actualEndTime" />
+        <result column="responsible_people" property="responsiblePeople" />
+        <result column="instruction_status" property="instructionStatus" />
+        <result column="create_time" property="createTime" />
+        <result column="create_uid" property="createUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_uid" property="updateUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_product_id, product_id, batch_no, order_quantity, planned_quantity, actual_yield, balance, brief, planned_begin_time, planned_end_time, actual_begin_time, actual_end_time, responsible_people, instruction_status, create_time, create_uid, update_time, update_uid
+    </sql>
+
+</mapper>

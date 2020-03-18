@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.UsersDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Users">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="face" property="face" />
+        <result column="nickname" property="nickname" />
+        <result column="reg_time" property="regTime" />
+        <result column="reg_ip" property="regIp" />
+        <result column="last_time" property="lastTime" />
+        <result column="last_ip" property="lastIp" />
+        <result column="status" property="status" />
+        <result column="email" property="email" />
+        <result column="mobile" property="mobile" />
+        <result column="gender" property="gender" />
+        <result column="birth_day" property="birthDay" />
+        <collection property="roles" ofType="com.gdglc.hzqmes.po.Role">
+            <id column="role_id" property="roleId" />
+            <result column="role_name" property="roleName" />
+        </collection>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        users.id, username, password, face, users.nickname, reg_time, reg_ip, last_time, last_ip, status, email, mobile, gender, birth_day
+    </sql>
+    <select id="selectUserByUsername" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"/>,
+        role.role_id,role.role_name from users
+      left join user_role on user_role.user_id=users.id
+      left join role on role.role_id = user_role.role_id
+      where status != 1 and (username = #{username} or email = #{username} or mobile = #{username})
+    </select>
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        select users.id, username, face, nickname, reg_time, reg_ip, email, last_time, last_ip, mobile, gender, birth_day, status,
+        role.role_id,role.role_name from users
+        left join user_role on user_role.user_id=users.id
+        left join role on role.role_id = user_role.role_id
+         <where>
+             status != 1
+             <if test="usersForm.user!=null">
+                 <if test="usersForm.user.username != null and usersForm.user.username !=''">
+                     and username like "%"#{usersForm.user.username}"%"
+                 </if>
+                 <if test="usersForm.user.mobile != null and usersForm.user.mobile !=''">
+                     and mobile like "%"#{usersForm.user.mobile}"%"
+                 </if>
+                 <if test="usersForm.user.email != null and usersForm.user.email !=''">
+                     and email like "%"#{usersForm.user.email}"%"
+                 </if>
+                 <if test="usersForm.user.status != null">
+                     and status=#{usersForm.user.status}
+                 </if>
+                 <if test="usersForm.user.gender != null">
+                     and gender=#{usersForm.user.gender}
+                 </if>
+             </if>
+            <if test="usersForm.searchForm!=null">
+              <if test="usersForm.searchForm.startDate != null and usersForm.searchForm.startDate !=''">
+                and birth_day &gt;= #{usersForm.searchForm.startDate}
+              </if>
+              <if test="usersForm.searchForm.endDate != null and usersForm.searchForm.endDate !=''">
+                and birth_day &lt;= #{usersForm.searchForm.endDate}
+              </if>
+            </if>
+         </where>
+         order by reg_time desc
+    </select>
+
+    <select id="selectUserById" parameterType="integer" resultMap="BaseResultMap">
+            select users.id, username, face, nickname, reg_time, reg_ip, email, last_time, last_ip, mobile, gender, birth_day, status,
+        role.role_id,role.role_name from users
+        left join user_role on user_role.user_id=users.id
+        left join role on role.role_id = user_role.role_id
+         where users.id = #{id}
+    </select>
+
+    <select id="checkUserByUsername" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM users WHERE username= #{username}
+        <if test="id != 0">
+            and id != #{id}
+        </if>
+        and status != 1
+    </select>
+
+    <select id="checkUserEmailAndMobile" parameterType="integer" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM users WHERE (email= #{str} or mobile = #{str})
+        <if test="id != 0">
+            and id != #{id}
+            and status != 1
+        </if>
+    </select>
+
+    <update id="updateUserStatusById" parameterType="hashmap">
+      update users set status = #{status} where id in
+        (
+        <foreach collection="ids" index="index" item="item" open="" separator="," close="">
+            #{item}
+        </foreach>
+        )
+    </update>
+
+    <update id="updateUserLoginTimeAndIp">
+        update users set last_time = #{lastTime}, last_ip = #{lastIp} where username = #{username}
+    </update>
+</mapper>

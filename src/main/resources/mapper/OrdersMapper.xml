@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.OrdersDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Orders">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="order_no" property="orderNo" />
+        <result column="deliver_date" property="deliverDate" />
+        <result column="order_date" property="orderDate" />
+        <result column="order_status" property="orderStatus" />
+        <result column="is_strict_quality" property="isStrictQuality" />
+        <result column="create_time" property="createTime" />
+        <result column="create_uid" property="createUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_uid" property="updateUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        orders.id, customer_id,customer_name, order_no, deliver_date, order_date, order_status, is_strict_quality, orders.create_time, orders.create_uid, orders.update_time, orders.update_uid
+    </sql>
+
+
+    <!-- 通用查询条件复用 -->
+    <sql id="where_search">
+        <trim prefix="where" prefixOverrides="and | or">
+            orders.customer_id = customer.id
+            <if test="orderForm.orderNo!=null and orderForm.orderNo!=''">
+                and order_no like concat('%',#{orderForm.orderNo},'%')
+            </if>
+        </trim>
+
+    </sql>
+
+    <select id="findAll" resultType="com.gdglc.hzqmes.common.vo.OrderVo">
+        select  <include refid="Base_Column_List"/>  from orders,customer
+        <include refid="where_search"/>
+    </select>
+
+    <select id="searchOrderDataCount" resultType="int" parameterType="hashmap">
+        select count(1) from  orders,customer
+        <include refid="where_search"/>
+    </select>
+
+    <delete id="deleteManOrder">
+        delete from orders where id in
+        <foreach item="order" collection="orderNo" open="(" separator="," close=")">
+            #{order}
+        </foreach>
+    </delete>
+
+
+</mapper>

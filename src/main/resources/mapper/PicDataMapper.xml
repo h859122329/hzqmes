@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.PicDataDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.PicData">
+        <id column="id" property="id" />
+        <result column="entity" property="entity" />
+        <result column="entity_id" property="entityId" />
+        <result column="entity_field" property="entityField" />
+        <result column="seq_no" property="seqNo" />
+        <result column="pic_path" property="picPath" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, entity, entity_id, entity_field, seq_no, pic_path
+    </sql>
+
+    <select id="getPicDataByIdAndPrintContent" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from pic_data
+        where entity_id = #{id} and entity_field = "print_content"
+    </select>
+    <select id="getPicDataByIdAndPunchInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from pic_data
+        where entity_id = #{id} and entity_field = "punch_info"
+    </select>
+</mapper>

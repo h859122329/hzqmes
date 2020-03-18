@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.ProductDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Product">
+        <id column="ID" property="id" />
+        <result column="active_flag" property="activeFlag" />
+        <result column="product_name" property="productName" />
+        <result column="category_id" property="categoryId" />
+        <result column="customer_id" property="customerId" />
+        <result column="sku_code" property="skuCode" />
+        <result column="specification" property="specification" />
+        <result column="size" property="size" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="is_out_sourced" property="isOutSourced" />
+        <result column="need_blow_membrane" property="needBlowMembrane" />
+        <result column="is_corona_reqired" property="isCoronaReqired" />
+        <result column="need_folding" property="needFolding" />
+        <result column="need_printing" property="needPrinting" />
+        <result column="print_content" property="printContent" />
+        <result column="need_cutting" property="needCutting" />
+        <result column="need_punching" property="needPunching" />
+        <result column="punch_info" property="punchInfo" />
+        <result column="product_level" property="productLevel" />
+        <result column="is_in_use" property="isInUse" />
+        <result column="remark" property="remark" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="searchMap" type="com.gdglc.hzqmes.po.Product">
+        <id column="ID" property="id" />
+        <result column="active_flag" property="activeFlag" />
+        <result column="product_name" property="productName" />
+        <result column="sku_code" property="skuCode" />
+        <result column="specification" property="specification" />
+        <result column="size" property="size" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="is_out_sourced" property="isOutSourced" />
+        <result column="need_blow_membrane" property="needBlowMembrane" />
+        <result column="is_corona_reqired" property="isCoronaReqired" />
+        <result column="need_folding" property="needFolding" />
+        <result column="need_printing" property="needPrinting" />
+        <result column="print_content" property="printContent" />
+        <result column="need_cutting" property="needCutting" />
+        <result column="need_punching" property="needPunching" />
+        <result column="punch_info" property="punchInfo" />
+        <result column="product_level" property="productLevel" />
+        <result column="is_in_use" property="isInUse" />
+        <result column="remark" property="remark" />
+        <result column="create_uid" property="createUid" />
+        <result column="create_time" property="createTime" />
+        <result column="update_uid" property="updateUid" />
+        <result column="update_time" property="updateTime" />
+        <result column="customer_id" property="customerId" />
+        <association property="category" column="category_id" select="com.gdglc.hzqmes.dao.CategoryDao.getCategoryById"/>
+        <association property="customer" column="customer_id" select="com.gdglc.hzqmes.dao.CustomerDao.selectById"/>
+    </resultMap>
+
+    <resultMap id="getProductDetailAndGetPicData" type="com.gdglc.hzqmes.common.vo.ProductVo" extends="BaseResultMap">
+        <collection property="picDataPrintContent" column="id" ofType="com.gdglc.hzqmes.po.PicData"  select="com.gdglc.hzqmes.dao.PicDataDao.getPicDataByIdAndPrintContent" />
+        <collection property="picDataPunchInfo" column="id" ofType="com.gdglc.hzqmes.po.PicData"  select="com.gdglc.hzqmes.dao.PicDataDao.getPicDataByIdAndPunchInfo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, active_flag, product_name, category_id, customer_id, sku_code, specification, size, unit_price, is_out_sourced, need_blow_membrane, is_corona_reqired, need_folding, need_printing, print_content, need_cutting, need_punching, punch_info, product_level, is_in_use, remark, create_uid, create_time, update_uid, update_time
+    </sql>
+
+    <!--  查询产品并且查询对应的图片  -->
+    <select id="getProductDetailById" resultMap="getProductDetailAndGetPicData">
+        SELECT <include refid="Base_Column_List" />
+        FROM product
+        WHERE product.`ID` = #{id}
+    </select>
+
+    <!--产品搜索，多条件复合查询-->
+    <select id="searchProductDetailByCritera" resultMap="searchMap">
+        select
+        <include refid="Base_Column_List"/>
+        from  product
+        <include refid="productSearchCriteria"/>
+        order by update_time desc
+    </select>
+
+
+    <sql id="productSearchCriteria">
+
+        <trim prefix="where" suffixOverrides="and | or">
+             active_flag = 1 and
+            <if test="searchForm.productName != null and searchForm.productName != '' ">
+                product_name like "%"#{searchForm.productName}"%" and
+            </if>
+            <if test="searchForm.categoryId != 0 " >
+                category_id = #{searchForm.categoryId} and
+            </if>
+            <if test="searchForm.customerId != null" >
+                customer_id = #{searchForm.customerId} and
+            </if>
+            <if test="searchForm.skuCode != null" >
+                sku_code like "%"#{searchForm.skuCode}"%" and
+            </if>
+            <if test="searchForm.isOutSourced == true" >
+                is_out_sourced = true and
+            </if>
+            <if test="searchForm.isOutSourced == false" >
+                is_out_sourced = false and
+            </if>
+            <if test="searchForm.printContent != null" >
+                print_content like "%"#{searchForm.printContent}"%" and
+            </if>
+            <if test="searchForm.punchInfo != null" >
+                punch_info like "%"#{searchForm.punchInfo}"%" and
+            </if>
+            <if test="searchForm.productLevel != null" >
+                product_level = #{searchForm.productLevel} and
+            </if>
+        </trim>
+    </sql>
+</mapper>

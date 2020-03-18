@@ -1,0 +1,12 @@
+url-patterns:
+  platformAdminPatterns:
+  - /api/users/getByCondition
+  - /api/users/getById
+  - /api/users/checkUserName
+  - /api/users/checkUserEmailAndMobile
+  - /api/users/loadRoles
+  - /api/users/edit
+  - /api/users/add
+  - /api/users/enable
+  - /api/users/delByIds
+

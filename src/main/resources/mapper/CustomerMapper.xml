@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.CustomerDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Customer">
+        <id column="id" property="id" />
+        <result column="active_flag" property="activeFlag" />
+        <result column="user_id" property="userId" />
+        <result column="customer_name" property="customerName" />
+        <result column="remark" property="remark" />
+        <result column="is_tax_free" property="isTaxFree" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="settle_type" property="settleType" />
+        <result column="day_of_settle" property="dayOfSettle" />
+        <result column="customer_level" property="customerLevel" />
+        <result column="is_cooperating" property="isCooperating" />
+        <result column="reg_date" property="regDate" />
+        <result column="create_time" property="createTime" />
+        <result column="create_uid" property="createUid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, active_flag, user_id, customer_name, remark, is_tax_free, tax_rate, settle_type, day_of_settle, customer_level, is_cooperating, reg_date, create_time, create_uid
+    </sql>
+
+    <resultMap id="CustomerSearchResult" type="com.gdglc.hzqmes.common.vo.CustomerDetailVo">
+        <id property="id" column="id"/>
+        <result property="activeFlag" column="active_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="remark" column="remark"/>
+        <result property="isTaxFree" column="is_tax_free"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="settleType" column="settle_type"/>
+        <result property="dayOfSettle" column="day_of_settle" />
+        <result property="customerLevel" column="customer_level"/>
+        <result property="isCooperating" column="is_cooperating"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="createUid" column="create_uid"/>
+        <association property="customerUser" column="user_id" select="com.gdglc.hzqmes.dao.UsersDao.selectUserById"/>
+        <association property="createUser" column="create_uid" select="com.gdglc.hzqmes.dao.UsersDao.selectUserById"/>
+    </resultMap>
+
+    <!-- 继承CustomerSearchResult， 用于需要使用Customer 多个一对多子属性的场景-->
+    <resultMap id="CustomerSearchDetailResult" type="com.gdglc.hzqmes.common.vo.CustomerDetailVo" extends="CustomerSearchResult">
+        <collection property="contactNoList" column="id" ofType="com.gdglc.hzqmes.po.ContactNo" select="com.gdglc.hzqmes.dao.ContactNoDao.getContactsByCustomerId"/>
+        <collection property="contactPersonList" column="id" ofType="com.gdglc.hzqmes.po.ContactPerson" select="com.gdglc.hzqmes.dao.ContactPersonDao.getContactPersonByCustomerId"/>
+        <collection property="customerAddrList" column="id" ofType="com.gdglc.hzqmes.po.CustomerAddr" select="com.gdglc.hzqmes.dao.CustomerAddrDao.getAddressByCustomerId"/>
+    </resultMap>
+
+    <!--客户搜索，多条件复合查询-->
+    <select id="selectCustomerBySearchCriteria" resultMap="CustomerSearchDetailResult">
+        select
+        <include refid="Base_Column_List"/>
+        from  customer
+        <include refid="customerSearchCriteria"/>
+    </select>
+
+    <sql id="customerSearchCriteria">
+
+        <trim prefix="where" suffixOverrides="and | or">
+            active_flag = 1 and
+            <if test="searchForm.customerName != null and searchForm.customerName != '' ">
+                customer_name like concat('%',#{searchForm.customerName},'%') and
+            </if>
+            <if test="searchForm.settleType != null" >
+                settle_type = #{searchForm.settleType} and
+            </if>
+            <if test="searchForm.isTaxFree != null" >
+                is_tax_free = #{searchForm.isTaxFree} and
+            </if>
+            <if test="searchForm.taxRateBottom != null" >
+                tax_rate &gt;= #{searchForm.taxRateBottom} and
+            </if>
+            <if test="searchForm.taxRateTop != null" >
+                tax_rate &lt;= #{searchForm.taxRateTop} and
+            </if>
+            <if test="searchForm.isCooperating != null" >
+                is_cooperating = #{searchForm.isCooperating} and
+            </if>
+            <if test="searchForm.beginSettleDay != null" >
+                day_of_settle &gt;= #{searchForm.beginSettleDay} and
+            </if>
+            <if test="searchForm.endSettleDay != null" >
+                day_of_settle &lt;= #{searchForm.endSettleDay} and
+            </if>
+            <if test="searchForm.beginRegDate != null" >
+                reg_date &gt;= #{searchForm.beginRegDate} and
+            </if>
+            <if test="searchForm.endRegDate != null" >
+                reg_date &lt;= #{searchForm.endRegDate} and
+            </if>
+            <if test="searchForm.customerLevel != null">
+                customer_level = #{searchForm.customerLevel} and
+            </if>
+        </trim>
+    </sql>
+
+</mapper>

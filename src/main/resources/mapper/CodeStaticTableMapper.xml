@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.CodeStaticTableDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.CodeStaticTable">
+        <id column="id" property="id" />
+        <result column="code_id_cd" property="codeIdCd" />
+        <result column="code_type" property="codeType" />
+        <result column="code_group" property="codeGroup" />
+        <result column="code_short_description" property="codeShortDescription" />
+        <result column="code_full_desc_text" property="codeFullDescText" />
+        <result column="code_value" property="codeValue" />
+        <result column="code_enable_flag" property="codeEnableFlag" />
+        <result column="code_display_order" property="codeDisplayOrder" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code_id_cd, code_type, code_group, code_short_description, code_full_desc_text, code_value, code_enable_flag, code_display_order
+    </sql>
+
+</mapper>

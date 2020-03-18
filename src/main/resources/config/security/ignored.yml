@@ -1,0 +1,5 @@
+# 忽略鉴权url
+ignored:
+  urls:
+  - /api/auth/login
+  - /api/auth/token

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.ContactPersonDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.ContactPerson">
+        <id column="id" property="id" />
+        <result column="customer_id" property="customerId" />
+        <result column="contact_name" property="contactName" />
+        <result column="contact_type" property="contactType" />
+        <result column="brief" property="brief" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_id, contact_name, contact_type, brief, description
+    </sql>
+
+    <select id="getContactPersonByCustomerId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from contact_person
+        where customer_id = #{customerId}
+    </select>
+
+</mapper>

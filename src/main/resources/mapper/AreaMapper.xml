@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.AreaDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Area">
+        <id column="areaid" property="areaid" />
+        <result column="areaname" property="areaname" />
+        <result column="parentid" property="parentid" />
+        <result column="arrparentid" property="arrparentid" />
+        <result column="child" property="child" />
+        <result column="arrchildid" property="arrchildid" />
+        <result column="listorder" property="listorder" />
+        <collection property="areaList" ofType="com.gdglc.hzqmes.po.Area">
+            <id column="areaareaid" property="areaid" />
+            <result column="areaareaname" property="areaname" />
+            <result column="areaparentid" property="parentid" />
+            <result column="areaarrparentid" property="arrparentid" />
+            <result column="areachild" property="child" />
+            <result column="areaarrchildid" property="arrchildid" />
+            <result column="arealistorder" property="listorder" />
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        areaid, areaname, parentid, arrparentid, child, arrchildid, listorder
+    </sql>
+
+    <!--连表查询语句-->
+    <sql id="SelectSQL">
+        SELECT a.*,
+        a2.areaid areaareaid,a2.areaname areaareaname,a2.parentid areaparentid,
+        a2.arrparentid areaarrparentid,a2.child areachild,a2.arrchildid areaarrchildid,a2.listorder arealistorder
+
+        FROM area a
+        LEFT JOIN area a2 on a2.parentid = a.areaid
+        WHERE a.parentid = 0
+    </sql>
+
+    <!-- 查询所属地方 -->
+    <select id="queryById" resultType="com.gdglc.hzqmes.po.Area">
+        SELECT areaName, areaId FROM `area`
+        <where>
+            <if test="areaType == 'child'">
+                child = #{id}
+            </if>
+            <if test="areaType == 'parentId'">
+                parentId = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSelectAreaById" resultType="com.gdglc.hzqmes.common.vo.SelectAreaVo">
+        SELECT a.`areaid`, a.`areaname`, a.`parentid`, r.`areaname` rname
+        FROM `area` a LEFT JOIN `area` r ON r.`areaid` = a.`parentid`
+        <where>
+            <if test="parentid != 0">
+                a.parentid != 0 AND a.`parentid` = #{parentid};
+            </if>
+            <if test="parentid == 0">
+                a.parentid = 0
+            </if>
+        </where>
+
+    </select>
+
+    <select id="queryAll" resultMap="BaseResultMap">
+        <include refid="SelectSQL"/>
+    </select>
+    <select id="getBrotherAreaById" resultType="com.gdglc.hzqmes.common.vo.SelectAreaVo">
+        SELECT a.`areaid`, a.`areaname`, a.`parentid`, r.`areaname` rname
+        FROM `area` a LEFT JOIN `area` r ON r.`areaid` = a.`parentid` WHERE  a.parentid  = (SELECT parentid FROM `area`
+        WHERE areaid = #{areaid})
+    </select>
+    <select id="getPeerAreaById" resultMap="BaseResultMap">
+        SELECT a.* FROM area a JOIN area b ON a.arrparentid = b.arrparentid WHERE b.areaid = #{areaid}
+    </select>
+    <select id="getByAreaId" resultMap="BaseResultMap">
+        SELECT areaid,areaname FROM `area` WHERE areaid=#{areaid};
+    </select>
+    <select id="getSubordinate" resultMap="BaseResultMap">
+        SELECT * FROM `area`  WHERE parentid=#{parentId};
+    </select>
+    <select id="getSelectByParentId" resultType="integer">
+        SELECT parentid FROM `area` WHERE areaid=#{areaId}
+    </select>
+</mapper>

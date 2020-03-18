@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdglc.hzqmes.dao.CategoryDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gdglc.hzqmes.po.Category">
+        <id column="catid" property="catid" />
+        <result column="module_id" property="moduleId" />
+        <result column="catname" property="catname" />
+        <result column="catdir" property="catdir" />
+        <result column="linkurl" property="linkurl" />
+        <result column="letter" property="letter" />
+        <result column="level" property="level" />
+        <result column="item" property="item" />
+        <result column="property" property="property" />
+        <result column="parentid" property="parentid" />
+        <result column="arrparentid" property="arrparentid" />
+        <result column="child" property="child" />
+        <result column="arrchildid" property="arrchildid" />
+        <result column="listorder" property="listorder" />
+        <result column="template" property="template" />
+        <result column="show_template" property="showTemplate" />
+        <result column="group_list" property="groupList" />
+        <result column="group_show" property="groupShow" />
+        <result column="group_add" property="groupAdd" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        catid, module_id, catname, catdir, linkurl, letter, level, item, property, parentid, arrparentid, child, arrchildid, listorder, template, show_template, group_list, group_show, group_add
+    </sql>
+    <!-- 平台管理员->分类管理->Tree数据查询结果 -->
+    <resultMap id="TreeResultMap" type="com.gdglc.hzqmes.po.Category">
+        <id column="catid" property="catid"/>
+        <result column="catname" property="catname"/>
+        <result column="child" property="child"/>
+        <result column="parentid" property="parentid"/>
+        <result column="module_id" property="moduleId"/>
+        <result column="listorder" property="listorder"/>
+        <result column="arrparentid" property="arrparentid"/>
+        <result column="level" property="level"/>
+    </resultMap>
+    <select id="getCategorysByParentId" resultMap="TreeResultMap">
+        SELECT c.catid,c.catname,c.child,c.parentid,c.module_id,c.listorder,c.arrparentid ,c.level FROM `category` c
+        <where>
+            AND c.module_id=#{module_id}
+            <if test="parentId != null and parentId > 0">
+                AND c.parentid = #{parentId}
+            </if>
+            <if test="parentId == null or parentId == 0 or parentId == '0'">
+                AND c.`level`=1
+            </if>
+        </where>
+        ORDER BY listorder DESC
+    </select>
+
+    <select id="getCategoryById" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"/>
+        from category
+        where  catid  =  #{categoryId}
+    </select>
+</mapper>
