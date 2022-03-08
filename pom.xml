@@ -30,7 +30,7 @@
 		<velocity-engine-core.version>2.0</velocity-engine-core.version>
 		<freemarker.version.version>2.3.23</freemarker.version.version>
 		<aliyun-sdk-oss>2.8.3</aliyun-sdk-oss>
-		<poi.version>3.17</poi.version>
+		<poi.version>5.2.1</poi.version>
 		<weixin-java-miniapp.version>3.3.0</weixin-java-miniapp.version>
 		<swagger.version>2.7.0</swagger.version>
 		<weixin-java-pay.version>3.4.0</weixin-java-pay.version>
